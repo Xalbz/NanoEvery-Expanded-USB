@@ -1,0 +1,6 @@
+41519adbabc6218c8d6f3ad03679d3fd63c88a9a770881dad1292780fdf338fe  NanoEvery_CDC_Repair_v5_EP0_StringFix.zip
+
+Hardware-tested locally built v5 SAMD11 application:
+a504f33ecf0e985efda9eff4813cf823ffb52de69c5a3abd907071df3247e28e  NanoEvery_Expanded.bin
+
+Note: the hardware-tested NanoEvery_Expanded.bin is not distributed in this snapshot; the repair workflow rebuilds and audits it from pinned sources.
