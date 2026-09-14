@@ -1,19 +1,11 @@
-# Windows build / repair tools
+# Build / repair tools
 
-The first public snapshot keeps the exact v5 repair workflow together as a release archive instead of prematurely rewriting the hardware-tested scripts.
+The project has a working Windows v5 repair/build workflow from the hardware-development session. For the first public source snapshot, the repository intentionally avoids publishing an archive unless it can be verified byte-for-byte after upload.
 
-Download:
-
-`../release/v0.1.0/NanoEvery_CDC_Repair_v5_EP0_StringFix.zip`
-
-The package contains the Windows repair/build scripts used for the successful v5 EP0 repair and gamepad test, including the SAMD11 recovery/flashing workflow and pinned-source build tooling.
-
-## Why the tools are archived for v0.1.0
-
-The working scripts grew during hardware debugging and still contain assumptions about the original development-lab folder layout. Keeping the verified package intact gives us a reproducible reference while a cleaner repo-relative installer is developed.
+The documentation, protocol and verified gamepad/IDE-upload test sketches are already public. The preserved repair/build package and cleaner repo-relative tooling will be added in a follow-up update after artifact verification.
 
 ## Safety
 
-Before using any SAMD11 flashing tool, read `../docs/RECOVERY.md` and keep your own original 12,288-byte SAMD11 application backup.
+Before using any SAMD11 flashing workflow, read `../docs/RECOVERY.md` and keep your own original 12,288-byte SAMD11 application backup.
 
-Never treat keyboard or mouse as hardware-verified just because the firmware builds. At v0.1.0 only the HID gamepad path has completed live hardware validation.
+At v0.1.0 only the **HID gamepad** path is hardware-verified. Keyboard and mouse remain test-pending.
