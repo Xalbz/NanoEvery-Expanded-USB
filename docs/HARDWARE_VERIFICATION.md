@@ -4,10 +4,13 @@
 
 This file records **only what has actually been observed on physical hardware**.
 
-The most important boundary for the first release is:
+As of 2026-09-14, the development board has completed controlled hardware validation of all three currently implemented HID paths:
 
-> **Gamepad is the only HID function hardware-tested so far.**  
-> Keyboard and mouse support may be present in the firmware, but they are not yet claimed as working.
+- ✅ Gamepad
+- ✅ Mouse
+- ✅ Keyboard
+
+The detailed controlled test is recorded in [test-reports/2026-09-14-full-hid-validation.md](test-reports/2026-09-14-full-hid-validation.md).
 
 ## Verified date
 
@@ -31,25 +34,54 @@ The most important boundary for the first release is:
 a504f33ecf0e985efda9eff4813cf823ffb52de69c5a3abd907071df3247e28e
 ```
 
-## HID result
+## HID results
 
 ### ✅ Gamepad — hardware verified
 
-The controlled gamepad test confirmed that Windows enumerated the HID game controller and received live gamepad reports from the ATmega4809 through the SAMD11.
+The controlled 30-second gamepad stage confirmed:
 
-The safe smoke test was intentionally gamepad-only to avoid accidental keyboard input or pointer movement.
+- Windows gamepad enumeration.
+- Buttons 1 through 16.
+- X-axis movement in both directions.
+- Neutral/release behavior after reports stop.
 
-### ⏳ Keyboard — not yet hardware-tested
+### ✅ Mouse — hardware verified
 
-The protocol/descriptor path exists in the experimental firmware, but no public claim of working keyboard behavior is made yet.
+The controlled 30-second mouse stage confirmed:
 
-### ⏳ Mouse — not yet hardware-tested
+- Relative X movement.
+- Relative Y movement.
+- Repeated right/down/left/up movement pattern.
+- Clean stop/release behavior after the stage.
 
-The protocol/descriptor path exists in the experimental firmware, but no public claim of working mouse behavior is made yet.
+The test intentionally generated no clicks.
+
+### ✅ Keyboard — hardware verified
+
+The controlled 30-second keyboard stage confirmed in Windows Notepad:
+
+- lowercase `a-z`
+- uppercase `A-Z` via Shift modifier
+- number row `0-9`
+- Space
+- Enter
+- Tab
+- Backspace
+- key release behavior
+
+The test intentionally avoided Ctrl, Alt, GUI/Windows-key and other disruptive shortcuts.
+
+## Safe end state
+
+After the third stage the sketch sends the release-all command and enters a safe idle state. No more HID activity is generated; CDC periodically prints:
+
+```text
+PING | SAFE IDLE | HID RELEASED
+```
 
 ## Supporting infrastructure also verified
 
-These tests were required to prove the Expanded firmware did not destroy the Nano Every's normal development path:
+These tests prove the Expanded firmware still preserves the Nano Every's normal development path:
 
 - CDC serial forwarding/configuration after the EP0 repair.
 - 1200-baud programming trigger.
@@ -57,8 +89,8 @@ These tests were required to prove the Expanded firmware did not destroy the Nan
 - Normal Arduino IDE `.ino` upload while Expanded remained installed.
 - The uploaded ATmega4809 sketch then produced stable 115200-baud serial output.
 
-This supports the end-to-end programming/CDC path, but it does **not** validate untested HID classes.
+## Validation boundary
 
-## Ongoing validation
+The current results are for the development Nano Every and Windows host used during development. Cross-board repeatability and Linux/macOS hosts remain separate future validation targets.
 
-New tests will be added as the project moves forward. The live status belongs in [TEST_MATRIX.md](TEST_MATRIX.md). A function should be marked verified only after a repeatable physical test has been recorded.
+The live status belongs in [TEST_MATRIX.md](TEST_MATRIX.md). A feature should only be marked verified after a repeatable physical test has been recorded.
