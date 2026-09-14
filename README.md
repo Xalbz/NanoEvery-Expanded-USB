@@ -26,21 +26,13 @@ What we have actually demonstrated on the development board:
 
 As development continues, each newly tested function will get its own result in [docs/TEST_MATRIX.md](docs/TEST_MATRIX.md) and, where useful, a dedicated test sketch/log.
 
-## v0.1.0 package
+## v0.1.0 public snapshot
 
-The preserved Windows v5 repair/build package used for this milestone is published here:
+The first public snapshot is intentionally **source/documentation first**. It contains the verified gamepad test, Arduino IDE upload verification sketch, protocol, recovery notes, USB trace diagnosis and live test matrix.
 
-**[NanoEvery_CDC_Repair_v5_EP0_StringFix.zip](release/v0.1.0/NanoEvery_CDC_Repair_v5_EP0_StringFix.zip)**
+The exact locally tested SAMD11 firmware hash is recorded in [release/v0.1.0/SHA256SUMS.txt](release/v0.1.0/SHA256SUMS.txt), but the binary/repair bundle is **not being published until the uploaded artifact can be checked byte-for-byte against the known-good local copy**. This prevents a bad or truncated package from being presented as the tested release.
 
-Package SHA-256:
-
-```text
-41519adbabc6218c8d6f3ad03679d3fd63c88a9a770881dad1292780fdf338fe
-```
-
-Checksums and the hardware-tested local firmware hash are recorded in [release/v0.1.0/SHA256SUMS.txt](release/v0.1.0/SHA256SUMS.txt).
-
-The package is intentionally preserved in its hardware-tested form. A cleaner repo-relative installer can be developed later without losing the known-good reference workflow. See [tools/README.md](tools/README.md).
+See [release/v0.1.0/README.md](release/v0.1.0/README.md) and [tools/README.md](tools/README.md). Additional tested artifacts will be uploaded as we move forward.
 
 ## Architecture
 
