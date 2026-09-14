@@ -1,7 +1,7 @@
 # Nano Every Expanded USB
 
 > **Experimental / early hardware release**  
-> **HID test status:** the **gamepad path is the only HID function currently verified on real hardware**. Keyboard and mouse support exists in the firmware, but those paths are **not yet hardware-tested** and should not be described as working until their test reports are added here.
+> **HID test status:** gamepad, mouse and keyboard have now all been physically verified on the development Nano Every under Windows using the controlled full-HID validation sketch.
 
 **Nano Every Expanded USB** is an unofficial community project that explores using the Arduino Nano Every's onboard **ATSAMD11D14AM** as a more capable USB coprocessor while preserving the normal ATmega4809 Arduino workflow.
 
@@ -9,30 +9,34 @@ Project by **BlaX / Xalbz**.
 
 ## Current status
 
-The first successful hardware milestone was reached on **2026-09-14**.
+The first successful hardware milestone was reached on **2026-09-14**, and the same day the project completed a controlled full-HID validation.
 
-What we have actually demonstrated on the development board:
+What has now been demonstrated on the development board:
 
 - ✅ Expanded SAMD11 firmware boots and enumerates.
 - ✅ **USB HID gamepad** enumerates and sends live button/axis reports.
+- ✅ **USB HID mouse** sends relative X/Y movement and stops cleanly after release.
+- ✅ **USB HID keyboard** sends letters, Shift-uppercase, numbers and basic safe control keys with proper release behavior.
 - ✅ CDC serial remains usable after the EP0 repair.
 - ✅ The 1200-baud programming trigger still works.
 - ✅ JTAG2/UPDI programming of the ATmega4809 still works.
 - ✅ A normal `.ino` sketch can be uploaded from Arduino IDE while Expanded remains installed.
-- ⏳ USB keyboard: code path present, **not hardware-tested yet**.
-- ⏳ USB mouse: code path present, **not hardware-tested yet**.
 
-**Important:** CDC and Arduino IDE upload tests verify the supporting USB/programming infrastructure. They do **not** count as validation of keyboard or mouse HID behavior.
+The full controlled HID test is stored at:
 
-As development continues, each newly tested function will get its own result in [docs/TEST_MATRIX.md](docs/TEST_MATRIX.md) and, where useful, a dedicated test sketch/log.
+```text
+examples/Full_HID_Validation/Full_HID_Validation.ino
+```
+
+and the recorded result is here:
+
+[docs/test-reports/2026-09-14-full-hid-validation.md](docs/test-reports/2026-09-14-full-hid-validation.md)
 
 ## v0.1.0 public snapshot
 
-The first public snapshot is intentionally **source/documentation first**. It contains the verified gamepad test, Arduino IDE upload verification sketch, protocol, recovery notes, USB trace diagnosis and live test matrix.
+The first public snapshot is intentionally **source/documentation first**. It contains the verified HID tests, Arduino IDE upload verification sketch, protocol, recovery notes, USB trace diagnosis and live test matrix.
 
-The exact locally tested SAMD11 firmware hash is recorded in [release/v0.1.0/SHA256SUMS.txt](release/v0.1.0/SHA256SUMS.txt), but the binary/repair bundle is **not being published until the uploaded artifact can be checked byte-for-byte against the known-good local copy**. This prevents a bad or truncated package from being presented as the tested release.
-
-See [release/v0.1.0/README.md](release/v0.1.0/README.md) and [tools/README.md](tools/README.md). Additional tested artifacts will be uploaded as we move forward.
+The exact locally tested SAMD11 firmware hash is recorded in [release/v0.1.0/SHA256SUMS.txt](release/v0.1.0/SHA256SUMS.txt). Additional tested artifacts will be uploaded as development continues.
 
 ## Architecture
 
@@ -49,23 +53,23 @@ flowchart LR
     S[SAMD11 Expanded firmware]
     A[ATmega4809 Arduino sketch]
     G[USB HID Gamepad]
-    K[USB HID Keyboard - UNTESTED]
-    M[USB HID Mouse - UNTESTED]
+    K[USB HID Keyboard]
+    M[USB HID Mouse]
 
     PC <-- CDC Serial --> S
     PC <-- JTAG2 programming --> S
     S -- UPDI --> A
     A <-- internal UART --> S
     S --> G
-    S -. future hardware test .-> K
-    S -. future hardware test .-> M
+    S --> K
+    S --> M
 ```
 
 The key design goal is to gain extra USB capability **without throwing away normal Nano Every sketch uploading**.
 
 ## Hardware-tested firmware snapshot
 
-The v5 EP0 repair image used in the successful gamepad/programming test measured:
+The v5 EP0 repair image used in the successful HID/programming tests measured:
 
 ```text
 12,208 / 12,288 bytes
@@ -92,21 +96,42 @@ That narrowed `256` to `0`, broke the control request, and poisoned endpoint 0 f
 
 v5 widens that descriptor-length path and safely caps the temporary descriptor size. Full notes are in [docs/USB_TRACE_DIAGNOSIS.md](docs/USB_TRACE_DIAGNOSIS.md).
 
-## What you can test today
+## Controlled full HID validation
 
-### 1. Gamepad — verified
-
-The safe first HID test intentionally uses **gamepad only**, avoiding accidental keyboard presses or mouse movement.
-
-See:
+The verification sketch uses explicit single-character commands from Serial Monitor:
 
 ```text
-examples/NanoEvery_NanoUSB_GamepadTest/
+1 = GAMEPAD test  (30 sec)
+2 = MOUSE test    (30 sec)
+3 = KEYBOARD test (30 sec)
 ```
 
-The verified test toggles gamepad Button 1 and moves an axis so the complete path can be observed in Windows (`joy.cpl`).
+The sequence is locked to `1 -> 2 -> 3` and each stage ends with HID release behavior. After the keyboard stage the sketch enters safe idle mode and generates no further HID activity.
 
-### 2. Normal Arduino IDE upload — verified infrastructure
+### Gamepad — verified
+
+The 30-second stage cycles buttons 1-16 and moves the X axis in both directions.
+
+### Mouse — verified
+
+The 30-second stage moves the pointer in repeated right/down/left/up patterns. It intentionally performs no mouse clicks.
+
+### Keyboard — verified
+
+The 30-second stage was observed in Windows Notepad and covers:
+
+- `a-z`
+- `A-Z` using Shift
+- `0-9`
+- Space
+- Enter
+- Tab
+- Backspace
+- release behavior between strokes
+
+The test intentionally avoids Ctrl, Alt, GUI/Windows-key and other potentially disruptive shortcuts.
+
+## Normal Arduino IDE upload — verified
 
 See:
 
@@ -133,8 +158,6 @@ Sending `P` should return:
 ```text
 PONG - USB CDC RX/TX VERIFIED!
 ```
-
-This test proves the normal sketch/programming path remains usable. It does **not** validate keyboard or mouse HID.
 
 ## Test policy
 
@@ -167,19 +190,19 @@ You are modifying USB firmware at your own risk.
 
 ## ATmega4809 ↔ SAMD11 HID protocol
 
-The experimental HID channel uses the Nano Every's internal `Serial` UART at 115200 baud:
+The HID channel uses the Nano Every's internal `Serial` UART at 115200 baud:
 
 ```text
 A5 5A C3 3C CMD LEN PAYLOAD... CRC
 ```
 
-The protocol already defines keyboard, mouse and gamepad commands, but **only gamepad has completed physical HID validation so far**.
+The protocol currently defines and has now physically validated keyboard, mouse and gamepad commands on the development board.
 
 See [docs/PROTOCOL.md](docs/PROTOCOL.md).
 
 ## Contributing / test reports
 
-Hardware testing is especially useful. If you test another Nano Every, Windows machine, keyboard path, mouse path, or another host OS, please record the exact board, firmware hash, OS, steps and result.
+Hardware testing is especially useful. If you test another Nano Every, another Windows machine, or another host OS, please record the exact board, firmware hash, OS, steps and result.
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) and the hardware-test issue template.
 
