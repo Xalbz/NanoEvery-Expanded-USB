@@ -6,9 +6,33 @@ First public experimental snapshot.
 
 ### Hardware-verified HID
 
-- **Gamepad only**
+- **Gamepad**
   - USB gamepad enumeration
-  - live button/axis reports
+  - buttons 1-16
+  - live X-axis reports
+  - neutral/release behavior
+- **Mouse**
+  - relative X/Y movement
+  - repeated right/down/left/up movement pattern
+  - clean stop/release behavior
+- **Keyboard**
+  - lowercase `a-z`
+  - uppercase `A-Z` using Shift
+  - number row `0-9`
+  - Space / Enter / Tab / Backspace
+  - key release behavior
+
+The full controlled hardware test is stored in:
+
+```text
+examples/Full_HID_Validation/Full_HID_Validation.ino
+```
+
+and documented in:
+
+```text
+docs/test-reports/2026-09-14-full-hid-validation.md
+```
 
 ### Supporting infrastructure verified
 
@@ -17,13 +41,6 @@ First public experimental snapshot.
 - JTAG2/UPDI programming of ATmega4809
 - normal Arduino IDE `.ino` upload while Expanded remains installed
 - SAM-BA recovery route retained and used during development
-
-### Present but not yet hardware-tested
-
-- USB keyboard HID path
-- USB mouse HID path
-
-These two must remain marked **unverified** until dedicated hardware tests are completed and uploaded.
 
 ### v5 EP0 fix
 
@@ -36,8 +53,9 @@ These two must remain marked **unverified** until dedicated hardware tests are c
 
 ### Next validation work
 
-- keyboard hardware test
-- mouse hardware test
-- second-board repeatability test
-- additional host/Windows-machine testing
+- second Nano Every repeatability test
+- additional Windows-host testing
+- Linux host test
+- macOS host test
 - cleaner repo-relative Windows installer
+- Arduino library API built around the now-verified gamepad/mouse/keyboard protocol
