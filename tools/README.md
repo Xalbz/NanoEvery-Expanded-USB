@@ -1,8 +1,21 @@
 # Build / repair tools
 
-The project has a working Windows v5 repair/build workflow from the hardware-development session. For the first public source snapshot, the repository intentionally avoids publishing an archive unless it can be verified byte-for-byte after upload.
+This project has a working Windows build/recovery workflow from the hardware-development session.
 
-The documentation, protocol and verified gamepad/IDE-upload test sketches are already public. The preserved repair/build package and cleaner repo-relative tooling will be added in a follow-up update after artifact verification.
+## Published now
+
+- `windows/NanoEvery_MuxTO_BuildLab_v6.bat`
+  - reconstructs the pinned historical MuxTO build environment
+  - build-only: it does **not** open a COM port or flash the board
+  - downloads/checks pinned toolchain components before building
+
+## Not published yet
+
+The full v5 repair/flash bundle used during the successful hardware session is being held back until the uploaded artifact can be checked byte-for-byte against the known-good local copy. This avoids presenting a damaged or incomplete archive as the tested release.
+
+The repo already contains the verified gamepad test, Arduino IDE upload verification sketch, protocol, recovery notes, USB trace diagnosis and live test matrix.
+
+As development continues, additional tested tools and hardware-test artifacts will be uploaded here.
 
 ## Safety
 
