@@ -26,6 +26,22 @@ What we have actually demonstrated on the development board:
 
 As development continues, each newly tested function will get its own result in [docs/TEST_MATRIX.md](docs/TEST_MATRIX.md) and, where useful, a dedicated test sketch/log.
 
+## v0.1.0 package
+
+The preserved Windows v5 repair/build package used for this milestone is published here:
+
+**[NanoEvery_CDC_Repair_v5_EP0_StringFix.zip](release/v0.1.0/NanoEvery_CDC_Repair_v5_EP0_StringFix.zip)**
+
+Package SHA-256:
+
+```text
+41519adbabc6218c8d6f3ad03679d3fd63c88a9a770881dad1292780fdf338fe
+```
+
+Checksums and the hardware-tested local firmware hash are recorded in [release/v0.1.0/SHA256SUMS.txt](release/v0.1.0/SHA256SUMS.txt).
+
+The package is intentionally preserved in its hardware-tested form. A cleaner repo-relative installer can be developed later without losing the known-good reference workflow. See [tools/README.md](tools/README.md).
+
 ## Architecture
 
 The Nano Every contains two MCUs:
