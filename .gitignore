@@ -1,0 +1,21 @@
+# Generated build/lab material
+NanoEvery_USB_Lab/
+build/
+out/
+logs/
+backups/
+*.bin
+*.elf
+*.map
+*.hex
+*.bak
+*.v14bak
+
+# Keep curated release archives committed
+!release/**/*.zip
+
+# OS/editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
